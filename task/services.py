@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from .models import DeliveryTask, TaskStateTransition
 from accounts.models import DeliveryPerson
 from django.core.exceptions import ValidationError
@@ -53,7 +54,8 @@ class DeliveryTaskService:
                     DeliveryPerson.objects.select_for_update().get(user=delivery_user)
                 )
             except DeliveryPerson.DoesNotExist:
-                raise ValidationError("The  Delivery Person does not exist")
+                raise get_object_or_404(DeliveryPerson, user=delivery_user)
+
 
             # 2. Check capacity
             if delivery_person.pending_task_count >= 3:
@@ -111,7 +113,7 @@ class DeliveryTaskService:
                     DeliveryPerson.objects.select_for_update().get(user=delivery_user)
                 )
             except DeliveryPerson.DoesNotExist:
-                raise ValidationError("The  Delivery Person does not exist")
+                raise get_object_or_404(DeliveryPerson, user=delivery_user)
 
             try:
                 task = (
@@ -161,7 +163,7 @@ class DeliveryTaskService:
                     DeliveryPerson.objects.select_for_update().get(user=delivery_user)
                 )
             except DeliveryPerson.DoesNotExist:
-                raise ValidationError("The  Delivery Person does not exist")
+                raise get_object_or_404(DeliveryPerson, user=delivery_user)
 
             try:
                 task = (

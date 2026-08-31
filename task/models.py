@@ -28,6 +28,11 @@ class DeliveryTask(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["current_state", "priority", "created_at"]),
+        ]
+
 class TaskStateTransition(models.Model):
     class Action(models.TextChoices):
         CREATED = "CREATED", "Created"
