@@ -3,7 +3,11 @@ from .views import (
     StoreManagerTaskListCreateView,
     StoreManagerTaskHistoryView,
     StoreManagerTaskCancelView,
-    DeliveryTopTaskView
+    DeliveryTopTaskView,
+    DeliveryTaskAcceptView,
+    DeliveryTaskDeclineView,
+    DeliveryTaskCompleteView,
+    DeliveryTaskListView
 )
 
 app_name = 'task'
@@ -31,4 +35,26 @@ urlpatterns = [
         name="delivery-top-task",
     ),
 
+    path(
+        "delivery/tasks/<int:task_id>/accept/",
+        DeliveryTaskAcceptView.as_view(),
+        name="delivery-task-accept",
+    ),
+    path(
+        "delivery/tasks/<int:task_id>/decline/",
+        DeliveryTaskDeclineView.as_view(),
+        name="delivery-task-decline",
+    ),
+
+    path(
+        "delivery/tasks/<int:task_id>/complete/",
+        DeliveryTaskCompleteView.as_view(),
+        name="delivery-task-complete",
+    ),
+
+    path(
+        "delivery/tasks/",
+        DeliveryTaskListView.as_view(),
+        name="delivery-task-list",
+    )
 ]

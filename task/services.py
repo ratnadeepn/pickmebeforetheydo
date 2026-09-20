@@ -75,7 +75,7 @@ class DeliveryTaskService:
 
             # 5. Update state and save
             task.current_state = DeliveryTask.State.ACCEPTED
-            task.assigned_to = delivery_person
+            task.assigned_to = delivery_user
             task.save(
                 update_fields=["current_state", "assigned_to"]
             )
@@ -90,7 +90,7 @@ class DeliveryTaskService:
                 from_state=DeliveryTask.State.NEW,
                 to_state=DeliveryTask.State.ACCEPTED,
                 action=TaskStateTransition.Action.ACCEPTED,
-                actor=delivery_person,
+                actor=delivery_user,
             )
 
             return task

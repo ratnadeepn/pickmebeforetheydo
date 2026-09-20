@@ -124,6 +124,82 @@ class DeliveryTopTaskView(APIView):
             status=status.HTTP_200_OK,
         )
 
+class DeliveryTaskAcceptView(APIView):
+    permission_classes = [IsAuthenticated, IsDeliveryPerson]
 
+    def post(self, request, task_id):
+        try:
+            task = DeliveryTaskService.accept_task(task_id=task_id,
+                                                   delivery_user=request.user)
+        except ValidationError as e:
+            return Response(
+                {"detail": e.messages},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
+        serializer = DeliveryTaskSerializer(task)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
 
+class DeliveryTaskDeclineView(APIView):
+    permission_classes = [IsAuthenticated, IsDeliveryPerson]
+
+    def post(self, request, task_id):
+        try:
+            task = DeliveryTaskService.decline_task(task_id=task_id,
+                                                    delivery_user=request.user)
+        except ValidationError as e:
+            return Response(
+                {"detail": e.messages},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = DeliveryTaskSerializer(task)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
+
+class DeliveryTaskCompleteView(APIView):
+    permission_classes = [IsAuthenticated, IsDeliveryPerson]
+
+    def post(self, request, task_id):
+        try:
+            task = DeliveryTaskService.complete_task(task_id=task_id,
+                                                     delivery_user=request.user)
+        except ValidationError as e:
+            return Response(
+                {"detail": e.messages},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = DeliveryTaskSerializer(task)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
+
+class DeliveryTaskListView(APIView):
+    permission_classes = [IsAuthenticated, IsDeliveryPerson]
+
+    def get(self, request):
+        accepted_task_ids = TaskStateTransition.objects.filter(
+            actor = request.user,
+            state=TaskStateTransition.Action.ACCEPTED,
+        ).values_list("task_id", flat=True)
+
+        tasks = DeliveryTask.objects.filter(
+            id__in=accepted_task_ids,
+        ).order_by(
+            "-created_at",
+        )
+
+        serializer = DeliveryTaskSerializer(tasks, many=True)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
