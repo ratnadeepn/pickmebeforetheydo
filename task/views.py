@@ -1,4 +1,5 @@
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.exceptions import ValidationError as DRFValidationError
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -31,11 +32,10 @@ class StoreManagerTaskListCreateView(APIView):
                 created_by=request.user,
             )
 
-        except ValidationError as e:
-            return Response(
-                {"detail": e.messages},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        except DjangoValidationError as e:
+            raise DRFValidationError({
+                'detail': e.messages[0]
+            })
 
         output_serializer = DeliveryTaskSerializer(task)
 
@@ -95,11 +95,10 @@ class StoreManagerTaskCancelView(APIView):
         try:
             task = DeliveryTaskService.cancel_task(task_id=task_id,
                                                    store_manager=request.user)
-        except ValidationError as e:
-            return Response(
-                {"detail": e.messages},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        except DjangoValidationError as e:
+            raise DRFValidationError({
+                'detail': e.messages[0]
+            })
 
         serializer = DeliveryTaskSerializer(task)
 
@@ -131,11 +130,10 @@ class DeliveryTaskAcceptView(APIView):
         try:
             task = DeliveryTaskService.accept_task(task_id=task_id,
                                                    delivery_user=request.user)
-        except ValidationError as e:
-            return Response(
-                {"detail": e.messages},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        except DjangoValidationError as e:
+            raise DRFValidationError({
+                'detail': e.messages[0]
+            })
 
         serializer = DeliveryTaskSerializer(task)
         return Response(
@@ -150,11 +148,10 @@ class DeliveryTaskDeclineView(APIView):
         try:
             task = DeliveryTaskService.decline_task(task_id=task_id,
                                                     delivery_user=request.user)
-        except ValidationError as e:
-            return Response(
-                {"detail": e.messages},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        except DjangoValidationError as e:
+            raise DRFValidationError({
+                'detail': e.messages[0]
+            })
 
         serializer = DeliveryTaskSerializer(task)
 
@@ -170,11 +167,10 @@ class DeliveryTaskCompleteView(APIView):
         try:
             task = DeliveryTaskService.complete_task(task_id=task_id,
                                                      delivery_user=request.user)
-        except ValidationError as e:
-            return Response(
-                {"detail": e.messages},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        except DjangoValidationError as e:
+            raise DRFValidationError({
+                'detail': e.messages[0]
+            })
 
         serializer = DeliveryTaskSerializer(task)
 
